@@ -54,17 +54,4 @@ O conteúdo editorial fica em `src/data/guides.js` e as 84 perguntas em `src/dat
 - `/admin`: cadastro, edição e exclusão de tags, lições e quizzes, notas por guia, exportação JSON e restauração do acervo inicial.
 
 As preferências e a atividade do visitante são armazenadas exclusivamente no navegador. Não há contas, sincronização, banco de dados ou serviço de publicação. A rota `/admin` não possui autenticação. Alterações de lições e quizzes aparecem nas rotas públicas **somente neste navegador**, sem envio a servidor; observações dos guias não modificam o texto dos guias. Não publicar o painel como administração remota sem backend e permissões.
-
-## Testes e auditoria
-
-```bash
-npm test
-npm run audit:prod
-npm run audit:all
-```
-
-Os alertas conhecidos de desenvolvimento relacionados ao `picomatch` permanecem documentados em `docs/SEGURANCA.md`. Não execute `npm audit fix --force` sem avaliar e testar as mudanças de versão.
-
-A entrega contém código-fonte e recursos gráficos. Quando fornecida com histórico Git, os commits são locais. Nenhum repositório remoto foi modificado. Antes da publicação, conferir rotas diretas no serviço de hospedagem, licenças das imagens, fontes oficiais, navegação por teclado, responsividade e funcionamento real no navegador.
-
 Comece por `LEIA_PRIMEIRO.md`. Leia também `docs/ARQUITETURA.md`, `docs/CONTRATO_INTEGRACAO_API.md`, `docs/INVENTARIO_DADOS_E_MOCKS.md` e `docs/VALIDACAO.md` antes de integrar API ou alterar o acervo. O inventário classifica cada origem local, seus consumidores e os fixtures dos testes, com caminhos completos a partir de `GS_Site-main/`.
