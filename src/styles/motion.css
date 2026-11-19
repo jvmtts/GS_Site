@@ -1,0 +1,202 @@
+.motion-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  isolation: isolate;
+  animation-duration: var(--motion-duration);
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+.motion-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min(235px, 70vw);
+  transform-origin: center;
+}
+
+.motion-points {
+  display: block;
+  width: 104px;
+  height: 152px;
+  flex: none;
+  overflow: visible;
+  transform-origin: center;
+}
+
+.motion-points circle {
+  fill: var(--blue);
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+.motion-splash {
+  background: #fff;
+  animation-name: splash-curtain;
+}
+
+.motion-splash .motion-points {
+  animation: splash-orbit 690ms cubic-bezier(.2, .7, .2, 1) both;
+}
+
+.motion-splash .motion-points circle {
+  opacity: 0;
+  animation: splash-dot 640ms cubic-bezier(.23, .82, .26, 1) both;
+  animation-delay: var(--dot-delay);
+}
+
+.motion-wordmark {
+  display: block;
+  width: min(235px, 70vw);
+  height: auto;
+  margin-top: -7px;
+  opacity: 0;
+  transform: translateY(7px);
+  animation: splash-title 350ms 440ms ease-out both;
+}
+
+.motion-tagline {
+  width: 100%;
+  margin: 10px 0 0;
+  color: #626a7a;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  opacity: 0;
+  animation: splash-title 260ms 590ms ease-out both;
+}
+
+.motion-transition {
+  background: transparent;
+  animation-name: transition-curtain;
+}
+
+.motion-transition .motion-content {
+  align-items: center;
+  width: 220px;
+  animation: transition-mark-fade var(--motion-duration) linear both;
+}
+
+.motion-transition .motion-points {
+  width: 102px;
+  height: 149px;
+  animation: transition-orbit var(--motion-duration) cubic-bezier(.37, .1, .56, .95) both;
+}
+
+.motion-transition .motion-points circle {
+  opacity: 1;
+  animation: transition-dot var(--motion-duration) cubic-bezier(.45, .1, .52, .91) both;
+}
+
+@keyframes splash-dot {
+  0% {
+    opacity: 0;
+    transform: translate(var(--scatter-x), var(--scatter-y)) scale(.6);
+  }
+  28% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes splash-orbit {
+  0% {
+    transform: rotate(-22deg) scale(.92);
+  }
+  62% {
+    transform: rotate(12deg) scale(1.04);
+  }
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes splash-title {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes splash-curtain {
+  0%, 80% {
+    background: #fff;
+    opacity: 1;
+  }
+  100% {
+    background: #fff;
+    opacity: 0;
+  }
+}
+
+@keyframes transition-dot {
+  0%, 8% {
+    transform: translate(0, 0) scale(1);
+  }
+  34% {
+    transform: translate(var(--scatter-x), var(--scatter-y)) scale(.82);
+  }
+  50%, 64% {
+    transform: translate(var(--orbit-x), var(--orbit-y)) scale(1);
+  }
+  89%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes transition-orbit {
+  0% {
+    transform: rotate(0deg) scale(.87);
+  }
+  36% {
+    transform: rotate(135deg) scale(1.1);
+  }
+  66% {
+    transform: rotate(282deg) scale(1.04);
+  }
+  100% {
+    transform: rotate(360deg) scale(.94);
+  }
+}
+
+@keyframes transition-curtain {
+  0% {
+    background: rgb(255 255 255 / 0%);
+    backdrop-filter: blur(0);
+  }
+  43%, 57% {
+    background: rgb(255 255 255 / 90%);
+    backdrop-filter: blur(9px);
+  }
+  100% {
+    background: rgb(255 255 255 / 0%);
+    backdrop-filter: blur(0);
+  }
+}
+
+@keyframes transition-mark-fade {
+  0% {
+    opacity: 0;
+  }
+  16%, 77% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-screen {
+    display: none !important;
+  }
+}

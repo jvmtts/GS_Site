@@ -1,0 +1,425 @@
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.article-index h3 {
+  margin-bottom: 6px;
+}
+
+.article-index .article-index-count {
+  font-size: 10px;
+  color: var(--muted);
+  margin: 0 0 15px;
+  line-height: 1.6;
+}
+
+.article-index-sections {
+  max-height: min(65vh,620px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.article-index .article-index-sections a {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 8px;
+  line-height: 1.4;
+  border-left: 2px solid transparent;
+  border-bottom: 0;
+  background: none;
+  color: var(--text-secondary);
+  white-space: normal;
+}
+
+.article-index .article-index-sections a:first-of-type {
+  color: var(--text-secondary);
+  background: none;
+  border-left-color: transparent;
+}
+
+.article-index .article-index-sections a:hover,
+.article-index .article-index-sections a.is-current,
+.article-index .article-index-sections a[aria-current="location"] {
+  color: var(--blue);
+  background: var(--surface-0);
+  border-left-color: var(--blue);
+}
+
+.article-index .section-marker {
+  flex: 0 0 14px;
+  width: 14px;
+  color: var(--text-tertiary);
+  font-weight: 750;
+  text-align: center;
+}
+
+.article-index .section-marker.was-visited {
+  color: var(--blue);
+}
+
+.article-index>a[href="#fontes"] {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 15px;
+  font-weight: 750;
+}
+
+.reading-progress-panel {
+  margin: 27px 0 28px;
+  padding: 22px 25px 20px;
+  background: var(--surface-0);
+  border-left: 3px solid var(--blue);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.reading-progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 15px;
+}
+
+.reading-progress-top h2 {
+  margin: 7px 0 17px;
+  font: 850 clamp(18px,1.8vw,22px)/1.14 var(--display);
+  letter-spacing: -.025em;
+}
+
+.reading-progress-fraction {
+  font: 850 26px/1.1 var(--display);
+  letter-spacing: -.05em;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.reading-progress-fraction span {
+  font-size: 15px;
+  color: var(--blue);
+}
+
+.reading-progress-track {
+  width: 100%;
+  height: 5px;
+  background: var(--surface-1);
+  position: relative;
+  overflow: hidden;
+}
+
+.reading-progress-track>span {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+  transition: width .25s ease;
+}
+
+.reading-progress-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: baseline;
+  margin-top: 13px;
+  flex-wrap: wrap;
+}
+
+.reading-progress-bottom p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.reading-progress-resume {
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--blue);
+  max-width: 100%;
+}
+
+.reading-progress-resume:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.reading-progress-confirm {
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding-top: 15px;
+  margin-top: 15px;
+}
+
+.reading-progress-confirm p {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.reading-progress-confirm button {
+  border: 1px solid var(--blue);
+  background: transparent;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 760;
+  padding: 10px 13px;
+  flex: 0 0 auto;
+}
+
+.reading-progress-confirm button:hover {
+  background: var(--surface-0);
+}
+
+.reading-library .page-head {
+  padding-bottom: 25px;
+}
+
+.reading-library .profile-overview {
+  max-width: none;
+  gap: 0;
+  margin-bottom: 30px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.reading-library .profile-overview>div {
+  border: 0;
+  padding: 20px 22px 19px 0;
+}
+
+.reading-library .profile-overview strong {
+  margin-top: 7px;
+}
+
+.reading-library .tabs {
+  border-bottom: 1px solid var(--line);
+  gap: 0;
+  margin-bottom: 12px;
+}
+
+.reading-library .tabs button {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 13px 13px;
+}
+
+.reading-library .tabs button.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.reading-activity-intro {
+  margin: 18px 0 16px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.reading-activity-item {
+  padding: 23px 0 25px;
+  border-top: 1px solid var(--line);
+}
+
+.reading-activity-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.reading-finished-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.reading-activity-item h2 {
+  font: 850 clamp(21px,2vw,27px)/1.16 var(--display);
+  letter-spacing: -.035em;
+  margin: 9px 0 16px;
+}
+
+.reading-activity-item h2 a:hover {
+  color: var(--blue);
+}
+
+.reading-activity-count {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.reading-activity-count strong {
+  color: var(--blue);
+  font: 850 15px var(--display);
+}
+
+.reading-progress-meter--compact .reading-progress-track {
+  height: 4px;
+}
+
+.reading-activity-place {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 11px 0 11px;
+}
+
+.reading-activity-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: var(--blue);
+  font-size: 12px;
+  padding: 7px 0;
+}
+
+.reading-activity-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.reading-empty {
+  margin-top: 21px;
+}
+
+.reading-preferences {
+  margin-top: 23px;
+  border-top: 1px solid var(--line);
+}
+
+.reading-preferences summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+  padding: 17px 0;
+}
+
+.reading-preferences summary:focus-visible {
+  outline: 3px solid #7e96ff;
+  outline-offset: 2px;
+}
+
+.reading-preferences[open] summary>span {
+  transform: rotate(180deg);
+}
+
+.reading-preferences form {
+  margin-top: 6px;
+}
+
+.reading-library .profile-data-actions {
+  margin-top: 0;
+}
+
+@media (max-width:1100px) {
+  .article-index .article-index-sections a {
+    font-size: 11px;
+  }
+}
+
+@media (max-width:780px) {
+  .article-index {
+    display: block;
+    overflow: visible;
+    position: static;
+    margin-bottom: 22px;
+  }
+  .article-index h3 {
+    display: block;
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  .article-index .article-index-count {
+    margin-bottom: 8px;
+  }
+  .article-index-sections {
+    display: flex;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 5px;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+  }
+  .article-index .article-index-sections a,
+  .article-index .article-index-sections a:first-of-type {
+    flex: 0 0 auto;
+    max-width: 220px;
+    border-left: 0;
+    border-bottom: 2px solid transparent;
+    white-space: normal;
+    padding: 10px 11px;
+    font-size: 11px;
+  }
+  .article-index .article-index-sections a.is-current,
+  .article-index .article-index-sections a[aria-current="location"] {
+    border-left: 0;
+    border-bottom-color: var(--blue);
+  }
+  .article-index>a[href="#fontes"] {
+    display: inline-block;
+    margin: 0 0 3px;
+    padding: 8px 0;
+    border-top: 0;
+    font-size: 11px;
+  }
+}
+
+@media (max-width:600px) {
+  .reading-library .profile-overview >div {
+    padding: 15px 7px 14px 0;
+  }
+  .reading-library .tabs {
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .reading-library .tabs button {
+    padding: 11px 9px;
+    font-size: 11px;
+  }
+  .reading-progress-panel {
+    padding: 18px 15px;
+  }
+  .reading-progress-confirm {
+    display: grid;
+  }
+  .reading-progress-confirm button {
+    justify-self: start;
+  }
+  .reading-progress-bottom {
+    display: grid;
+  }
+  .reading-activity-item {
+    padding: 19px 0 23px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .reading-progress-track>span {
+    transition: none;
+  }
+}
