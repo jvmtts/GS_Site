@@ -1,0 +1,63 @@
+@theme {
+  --color-pp-blue: #2447f5;
+  --color-pp-ink: #121316;
+  --color-pp-soft: #f0f3ff;
+  --font-sans: Inter,system-ui,sans-serif;
+}
+
+:root {
+  --blue: #2447f5;
+  --blue-deep: #1735d7;
+  --ink: #121316;
+  --muted: #656d7d;
+  --line: #e1e4eb;
+  --soft: #f1f3ff;
+  --display: 'Inter Display',Inter,system-ui,sans-serif;
+  --text: Inter,system-ui,sans-serif;
+  color: var(--ink);
+  background: #fff;
+  font-family: var(--text);
+  font-size: 15px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+}
+
+button,input,textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+svg {
+  flex-shrink: 0;
+}
+
+::selection {
+  background: #cad4ff;
+}
+
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible {
+  outline: 3px solid #7e96ff;
+  outline-offset: 3px;
+}

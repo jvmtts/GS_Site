@@ -3,7 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GS Site</title>
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Informação pública que faz sentido: guias claros, fontes oficiais e lições para compreender a vida pública."
+    />
+    <title>Ponto Público — Informação pública que faz sentido.</title>
+    <script>
+      (() => {
+        let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        try {
+          const stored = JSON.parse(localStorage.getItem('pp-reader-preferences') || 'null');
+          if (stored?.theme === 'dark' || stored?.theme === 'light') theme = stored.theme;
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <link rel="icon" href="/favicon/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
   </head>
   <body>
     <div id="root"></div>
