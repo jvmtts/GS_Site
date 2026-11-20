@@ -9,7 +9,7 @@ O catálogo de lições, perguntas, alternativas e tags utiliza a API Java da eq
 1. A API roda no Render. Não é necessário iniciar o Java ou manter a pasta do backend junto ao site.
 2. Na pasta `GS_Site`, execute `npm run dev`. O comando inicia o Vite, que encaminha as chamadas para a API publicada. Mantenha o terminal aberto.
 3. No `/admin`, cadastre tags, lições e perguntas. Para levar as 14 lições e as 84 perguntas do acervo para o banco, use **Importar acervo inicial**. A importação preserva os registros existentes e pode continuar depois de uma interrupção.
-4. Em `/licoes`, os filtros de tags consultam `/lesson/getbytagsnames`. A busca do cabeçalho também encontra lições por título e tags.
+4. Em `/licoes`, os filtros usam os vínculos de tags do catálogo carregado da API. Selecionar várias tags mostra lições com qualquer uma delas, sem duplicar resultados. O endpoint publicado `/lesson/getbytagsnames` exige um corpo em GET; o site filtra os dados já recebidos para evitar o HTTP 400. A busca do cabeçalho também encontra lições por título e tags.
 5. Em `/user`, abra **Cadastro e inscrições** para criar ou selecionar um cadastro, atualizar nome/senha ou excluí-lo. Em uma lição, use **Inscrever-se nesta lição**.
 
 A API atual não tem autenticação. A seleção de um cadastro serve para a demonstração de inscrições e não é um login. Use cadastros simulados. Favoritos, notas, histórico, preferências e resultados continuam sendo dados do navegador, pois não há endpoints para essas informações.

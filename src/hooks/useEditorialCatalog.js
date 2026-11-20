@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createApiEditorialRepository } from '../repositories/apiEditorialRepository.js';
+import { filterLessonsByTags } from '../lib/apiCatalog.js';
 
 const EMPTY_CATALOG = { version: 1, tags: [], lessons: [], quizzes: [] };
 
@@ -69,7 +70,10 @@ export default function useEditorialCatalog() {
     setCatalog(await repository.importInitial());
   }), [repository, change]);
 
-  const searchTags = useCallback((names, signal) => repository.searchTags(names, signal), [repository]);
+  const searchTags = useCallback(async (names, signal) => {
+    signal?.throwIfAborted();
+    return filterLessonsByTags(catalog, names);
+  }, [catalog]);
 
   return { catalog, loading, saving, error, reload, save, remove, importInitial, searchTags };
 }

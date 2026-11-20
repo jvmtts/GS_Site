@@ -4,6 +4,12 @@ import { lessonPreview } from './lessonHtml.js';
 
 const initialCatalog = createInitialEditorialCatalog();
 
+export function filterLessonsByTags(catalog, names = []) {
+  const tagIds = new Set(catalog.tags.filter((tag) => names.includes(tag.name)).map((tag) => tag.id));
+  return catalog.lessons.filter((lesson) => lesson.status === 'published'
+    && (names.length === 0 || lesson.tagIds.some((id) => tagIds.has(id))));
+}
+
 export function mapApiCatalog(lessons, tags) {
   if (!Array.isArray(lessons) || !Array.isArray(tags)) {
     throw new Error('A API devolveu um catálogo inválido.');

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createApiClient } from '../src/repositories/apiClient.js';
 import { createApiEditorialRepository } from '../src/repositories/apiEditorialRepository.js';
 import { createApiUserRepository } from '../src/repositories/apiUserRepository.js';
-import { mapApiCatalog, quizQuestionPayload } from '../src/lib/apiCatalog.js';
+import { filterLessonsByTags, mapApiCatalog, quizQuestionPayload } from '../src/lib/apiCatalog.js';
 import { createInitialEditorialCatalog } from '../src/data/editorialSeeds.js';
 
 const tags = [{ id: 2, tag: 'Cidadania' }];
@@ -65,17 +65,27 @@ test('cliente reconhece JSON, mensagens de erro e o ID retornado pelo cadastro',
   await assert.rejects(unavailable('/lesson/getall'), /API está indisponível/);
 });
 
-test('filtro envia uma lista de tags pela URL usando o endpoint existente', async () => {
-  const calls = [];
-  const repository = createApiEditorialRepository(async (path, options) => {
-    calls.push({ path, options });
-    return { data: path.startsWith('/tag') ? tags : lessons };
-  });
-  const found = await repository.searchTags(['Cidadania', 'Direitos']);
-  assert.equal(found.length, 1);
-  const query = calls.find((call) => call.path.startsWith('/lesson'));
-  assert.deepEqual(new URLSearchParams(query.path.split('?')[1]).getAll('tags'), ['Cidadania', 'Direitos']);
-  assert.equal(query.options.body, undefined);
+test('filtro usa os vínculos da API e combina tags sem duplicar lições', () => {
+  const constitution = { id: 3, tag: 'Constituição' };
+  const catalog = mapApiCatalog([
+    ...lessons,
+    { id: 11, title: 'Constituição', text: 'Texto', tags: [constitution], quizs: [] },
+    { id: 12, title: 'Duas tags', text: 'Texto', tags: [...tags, constitution], quizs: [] },
+    { id: 13, title: 'Sem tag', text: 'Texto', tags: [], quizs: [] },
+  ], [...tags, constitution]);
+  assert.deepEqual(filterLessonsByTags(catalog, ['Cidadania']).map((lesson) => lesson.apiId), [10, 12]);
+  assert.deepEqual(filterLessonsByTags(catalog, ['Constituição']).map((lesson) => lesson.apiId), [11, 12]);
+  assert.deepEqual(filterLessonsByTags(catalog, ['Cidadania', 'Constituição']).map((lesson) => lesson.apiId), [10, 11, 12]);
+  assert.deepEqual(filterLessonsByTags(catalog, []).map((lesson) => lesson.apiId), [10, 11, 12, 13]);
+});
+
+test('tag sem correspondência retorna vazio e rascunhos ficam fora do filtro', () => {
+  const catalog = mapApiCatalog(lessons, [...tags, { id: 9, tag: 'Sem lições' }]);
+  assert.deepEqual(filterLessonsByTags(catalog, ['Sem lições']), []);
+  assert.deepEqual(filterLessonsByTags(catalog, ['Inexistente']), []);
+  catalog.lessons[0].status = 'draft';
+  assert.deepEqual(filterLessonsByTags(catalog, ['Cidadania']), []);
+  assert.deepEqual(filterLessonsByTags(catalog, []), []);
 });
 
 test('retirar tag mantém as outras tags e não chama exclusão global', async () => {

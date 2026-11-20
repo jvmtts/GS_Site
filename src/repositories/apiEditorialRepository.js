@@ -36,14 +36,6 @@ export function createApiEditorialRepository(request = createApiClient()) {
 
   return {
     load,
-    async searchTags(names, signal) {
-      const params = new URLSearchParams();
-      names.forEach((name) => params.append('tags', name));
-      const [lessons, tags] = await Promise.all([
-        request(`/lesson/getbytagsnames?${params}`, { signal }), request('/tag/getall', { signal }),
-      ]);
-      return mapApiCatalog(lessons.data, tags.data).lessons;
-    },
     async save(type, input, previousId, catalog) {
       if (type === 'tags') {
         if (previousId) throw new Error('Para substituir uma tag, cadastre outra e altere os vínculos nas lições.');
