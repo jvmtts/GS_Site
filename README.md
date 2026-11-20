@@ -44,6 +44,12 @@ npm run preview
 
 A prévia compilada utiliza normalmente `http://localhost:4173/`.
 
+## Publicar na Vercel
+
+O arquivo `vercel.json` configura o build Vite, a saída `dist` e as rotas da hospedagem. Chamadas para `/api/*` são encaminhadas para `https://ponto-publico.onrender.com/*`; as demais rotas abrem o React, permitindo atualizar páginas como `/licoes` e `/user` sem erro 404.
+
+Mantenha `VITE_API_URL` ausente ou com o valor `/api` nas variáveis da Vercel. O proxy de desenvolvimento de `vite.config.js` não configura a hospedagem de produção. Depois de enviar alterações ao repositório conectado, aguarde a nova publicação da Vercel.
+
 ## Estrutura
 
 | Caminho | Responsabilidade |
