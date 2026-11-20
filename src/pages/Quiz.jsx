@@ -71,7 +71,7 @@ export default function Quiz({ lesson, quiz, onComplete }) {
             <span style={{ width: `${((index + 1) / questions.length) * 100}%` }} />
           </div>
           <h1 ref={heading} tabIndex="-1">{question.question}</h1>
-          <p className="quiz-instruction">Escolha uma alternativa. A explicação aparecerá logo abaixo.</p>
+          <p className="quiz-instruction">Escolha uma alternativa.{question.explanation ? ' A explicação aparecerá logo abaixo.' : ''}</p>
           <div className="answers" role="group" aria-label="Alternativas">
             {question.answers.map((answer, answerIndex) => (
               <button
@@ -99,11 +99,11 @@ export default function Quiz({ lesson, quiz, onComplete }) {
           {answered && (
             <div className={`feedback ${correct ? 'good' : 'bad'}`} role="status" aria-live="polite">
               <strong><Icon name={correct ? 'check' : 'info'} size={20} />
-                {correct ? 'Correto — você identificou o conceito.' : 'Ainda não — veja a explicação.'}
+                {correct ? 'Correto — você identificou o conceito.' : 'Ainda não — veja a resposta correta.'}
               </strong>
               {!correct && <p><b>Resposta correta:</b> {question.answers[question.correct]}</p>}
               {!correct && question.misconception && <p><b>Por que a alternativa escolhida não funciona:</b> {question.misconception}</p>}
-              <p>{question.explanation}</p>
+              {question.explanation && <p>{question.explanation}</p>}
               {guide && <Link to={guide.path} className="feedback-link">Revisar no guia <Icon name="arrow" size={15} /></Link>}
             </div>
           )}

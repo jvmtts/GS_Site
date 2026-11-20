@@ -6,7 +6,6 @@ import QuizEditor from '../components/admin/QuizEditor.jsx';
 import TagEditor from '../components/admin/TagEditor.jsx';
 import { useEditorialContent } from '../app/EditorialContext.jsx';
 import { guides } from '../data/content.js';
-import { createInitialEditorialCatalog } from '../data/editorialSeeds.js';
 
 const sections = [
   { id: 'lessons', label: 'Lições', singular: 'lição' },
@@ -16,13 +15,14 @@ const sections = [
 ];
 
 export default function Admin() {
-  const { catalog, save, remove, reset } = useEditorialContent();
+  const { catalog, save, remove, importInitial, saving } = useEditorialContent();
   const [section, setSection] = useState('lessons');
   const [selectedId, setSelectedId] = useState(catalog.lessons[0]?.id ?? null);
   const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState('');
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
+  const [editorVersion, setEditorVersion] = useState(0);
   const currentSection = sections.find((item) => item.id === section);
   const records = section === 'guides' ? [] : catalog[section];
   const selected = records.find((item) => item.id === selectedId) ?? null;
@@ -42,13 +42,14 @@ export default function Admin() {
     setError('');
   }
 
-  function persist(payload) {
+  async function persist(payload) {
     try {
-      const saved = save(section, payload, creating ? null : selected.id);
+      const saved = await save(section, payload, creating ? null : selected.id);
       setCreating(false);
       setSelectedId(saved.id);
+      setEditorVersion((version) => version + 1);
       setError('');
-      setNotice(`${currentSection.singular === 'quiz' ? 'Quiz' : currentSection.singular === 'tag' ? 'Tag' : 'Lição'} salvo(a) neste navegador.`);
+      setNotice(`${currentSection.singular === 'quiz' ? 'Quiz' : currentSection.singular === 'tag' ? 'Tag' : 'Lição'} salvo(a) pela API.`);
     } catch (failure) {
       setError(failure.message);
       setNotice('');
@@ -61,17 +62,17 @@ export default function Admin() {
     setError('');
   }
 
-  function deleteSelected() {
+  async function deleteSelected() {
     if (!selected) return;
     const related = section === 'lessons'
       ? ' O quiz vinculado também será excluído.'
-      : section === 'tags' ? ' A tag será desvinculada das lições.' : '';
-    if (!window.confirm(`Excluir ${currentSection.singular} "${selected.title ?? selected.name}"?${related} Esta operação afeta os dados deste navegador.`)) return;
+      : section === 'tags' ? ' A tag será desvinculada das lições e continuará disponível no cadastro.' : '';
+    if (!window.confirm(`${section === 'tags' ? 'Desvincular' : 'Excluir'} ${currentSection.singular} "${selected.title ?? selected.name}"?${related}`)) return;
     try {
-      remove(section, selected.id);
+      await remove(section, selected.id);
       setSelectedId(records.find((item) => item.id !== selected.id)?.id ?? null);
       setError('');
-      setNotice('Registro excluído do catálogo deste navegador.');
+      setNotice(section === 'tags' ? 'Tag desvinculada das lições.' : 'Registro excluído pela API.');
     } catch (failure) {
       setError(failure.message);
     }
@@ -91,16 +92,16 @@ export default function Admin() {
     setNotice('Exportação JSON solicitada ao navegador. Nenhum dado foi enviado a um servidor.');
   }
 
-  function restoreCatalog() {
-    if (!window.confirm('Restaurar as 14 lições e os 14 quizzes originais? Todas as edições, exclusões e tags locais serão perdidas.')) return;
+  async function restoreCatalog() {
+    if (!window.confirm('Importar as 14 lições e suas perguntas iniciais para o banco? Os registros existentes serão preservados.')) return;
     try {
-      reset();
+      await importInitial();
       setSection('lessons');
-      setSelectedId(createInitialEditorialCatalog().lessons[0]?.id ?? null);
+      setSelectedId(null);
       setCreating(false);
       setSearch('');
       setError('');
-      setNotice('Catálogo inicial restaurado neste navegador.');
+      setNotice('Acervo inicial importado pela API. Selecione uma lição para consultar.');
     } catch (failure) {
       setError(failure.message);
     }
@@ -111,7 +112,7 @@ export default function Admin() {
     const props = { onSave: persist, onDelete: deleteSelected, onCancel: discard };
     if (section === 'tags') return <TagEditor key={creating ? 'new-tag' : selected.id} item={creating ? null : selected}
       lessonCount={catalog.lessons.filter((lesson) => lesson.tagIds.includes(selected?.id)).length} {...props} />;
-    if (section === 'quizzes') return <QuizEditor key={creating ? 'new-quiz' : selected.id}
+    if (section === 'quizzes') return <QuizEditor key={creating ? 'new-quiz' : `${selected.id}-${editorVersion}`}
       item={creating ? null : selected} lessons={catalog.lessons} quizzes={catalog.quizzes} {...props} />;
     return <LessonEditor key={creating ? 'new-lesson' : selected.id} item={creating ? null : selected}
       tags={catalog.tags} hasQuiz={catalog.quizzes.some((quiz) => quiz.lessonId === selected?.id)} {...props} />;
@@ -122,11 +123,11 @@ export default function Admin() {
       <PageHead
         eyebrow="GESTÃO EDITORIAL"
         title="Painel de conteúdo."
-        description="Cadastre, revise e organize lições, quizzes e tags. As alterações ficam neste navegador e já aparecem nas páginas locais do portal."
+        description="Cadastre e organize lições, quizzes e tags. As alterações disponíveis são salvas pela API e aparecem no portal."
       />
       <div className="cms-warning" role="note">
-        <strong>Ambiente local, sem autenticação ou API.</strong>
-        <span>Esta rota não protege dados por usuário e não publica mudanças em servidor. Antes de disponibilizá-la na internet, é necessário implementar controle de acesso e persistência remota.</span>
+        <strong>Catálogo conectado à API.</strong>
+        <span>A edição de títulos e enunciados será disponibilizada em outra etapa. A API atual não possui autenticação.</span>
       </div>
       <div className="admin-stats" aria-label="Resumo do conteúdo">
         <div><strong>{guides.length}</strong><span>guias-base</span></div>
@@ -137,7 +138,7 @@ export default function Admin() {
       </div>
       <nav className="cms-nav" aria-label="Áreas de gestão de conteúdo">
         {sections.map((item) => (
-          <button key={item.id} type="button" aria-pressed={section === item.id}
+          <button key={item.id} type="button" aria-pressed={section === item.id} disabled={saving}
             onClick={() => switchSection(item.id)}>
             {item.label}<span>{item.id === 'guides' ? guides.length : catalog[item.id].length}</span>
           </button>
@@ -145,8 +146,9 @@ export default function Admin() {
       </nav>
       {notice && <p className="cms-notice" role="status">{notice}</p>}
       {error && <p className="cms-error" role="alert">{error}</p>}
+      {saving && <p className="cms-notice" role="status">Salvando pela API…</p>}
       {section === 'guides' ? <GuideInventory /> : (
-        <div className="cms-workspace">
+        <div className="cms-workspace" inert={saving} aria-busy={saving}>
           <section className="cms-list" aria-label={`Lista de ${currentSection.label.toLowerCase()}`}>
             <div className="cms-list-title">
               <h2>{currentSection.label}</h2>
@@ -176,11 +178,11 @@ export default function Admin() {
         </div>
       )}
       <div className="cms-maintenance" aria-label="Portabilidade do catálogo editorial">
-        <div><h2>Portabilidade dos dados</h2><p>Exporte as edições em JSON para revisão e futura importação por uma API. Restaurar o catálogo desfaz todas as alterações editoriais locais.</p></div>
-        <button type="button" className="outline-button" onClick={exportCatalog}>Exportar catálogo (JSON)</button>
-        <button type="button" className="cms-danger" onClick={restoreCatalog}>Restaurar catálogo inicial</button>
+        <div><h2>Portabilidade dos dados</h2><p>Exporte o catálogo em JSON ou importe o acervo inicial para o banco. A importação acrescenta os registros que faltarem.</p></div>
+        <button type="button" className="outline-button" disabled={saving} onClick={exportCatalog}>Exportar catálogo (JSON)</button>
+        <button type="button" className="cms-danger" disabled={saving} onClick={restoreCatalog}>Importar acervo inicial</button>
       </div>
-      <p className="cms-footnote">As alterações de lições, quizzes e tags permanecem no armazenamento local deste navegador. Os guias-base e as fontes oficiais continuam definidos no código, até a integração com o serviço de conteúdo.</p>
+      <p className="cms-footnote">Lições, perguntas, alternativas e vínculos com tags são armazenados pela API. Os guias-base e suas fontes oficiais fazem parte do acervo editorial do site.</p>
     </div>
   );
 }

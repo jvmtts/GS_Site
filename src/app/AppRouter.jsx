@@ -9,6 +9,7 @@ import usePortalState from '../hooks/usePortalState.js';
 import useReaderPreferences from '../hooks/useReaderPreferences.js';
 import useReducedMotion from '../hooks/useReducedMotion.js';
 import useEditorialCatalog from '../hooks/useEditorialCatalog.js';
+import useApiUser from '../hooks/useApiUser.js';
 import { EditorialContext } from './EditorialContext.jsx';
 import { MOTION_TIMING } from '../lib/motionTiming.js';
 import { NavigationContext } from './NavigationContext.jsx';
@@ -33,6 +34,7 @@ export default function AppRouter() {
   const { path, navigate, transitionId, finishTransition } = useAnimatedNavigation(reducedMotion, hideSplash);
   const portal = usePortalState(path);
   const editorial = useEditorialCatalog();
+  const account = useApiUser();
   const { preferences, changePreferences, resetPreferences } = useReaderPreferences(portal.profile?.readingMode);
 
   useEffect(() => {
@@ -51,12 +53,11 @@ export default function AppRouter() {
 
   const clearAllLocalData = () => {
     portal.clearLocalData();
-    editorial.reset();
     resetPreferences();
   };
 
   return (
-    <EditorialContext.Provider value={editorial}>
+    <EditorialContext.Provider value={{ ...editorial, account }}>
       <NavigationContext.Provider value={navigate}>
         <div className="app-root">
         <a href="#main-content" className="skip-link">Pular para o conteúdo</a>

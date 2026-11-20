@@ -10,9 +10,9 @@ function emptyQuestion() {
 
 export default function QuizEditor({ item, lessons, quizzes, onSave, onDelete, onCancel }) {
   const eligibleLessons = lessons.filter((lesson) => item?.lessonId === lesson.id || !quizzes.some((quiz) => quiz.lessonId === lesson.id));
-  const [title, setTitle] = useState(item?.title ?? '');
+  const [title, setTitle] = useState(item?.title ?? 'Revisão da lição');
   const [lessonId, setLessonId] = useState(item?.lessonId ?? '');
-  const [status, setStatus] = useState(item?.status ?? 'draft');
+  const [status, setStatus] = useState('published');
   const [questions, setQuestions] = useState(item?.questions.map((question) => ({
     ...question, answers: [...question.answers],
   })) ?? [emptyQuestion()]);
@@ -41,11 +41,11 @@ export default function QuizEditor({ item, lessons, quizzes, onSave, onDelete, o
         <span className="cms-secondary-meta">{questions.length} pergunta(s)</span>
       </div>
       <label htmlFor="cms-quiz-title">Título do quiz <span aria-hidden="true">*</span></label>
-      <input id="cms-quiz-title" required maxLength={150} value={title} onChange={(event) => setTitle(event.target.value)} />
+      <input id="cms-quiz-title" readOnly maxLength={150} value={title} onChange={(event) => setTitle(event.target.value)} />
       <div className="cms-form-columns">
         <div className="cms-field">
           <label htmlFor="cms-quiz-lesson">Lição vinculada <span aria-hidden="true">*</span></label>
-          <select id="cms-quiz-lesson" required value={lessonId} onChange={(event) => setLessonId(event.target.value)}>
+          <select id="cms-quiz-lesson" required disabled={Boolean(item)} value={lessonId} onChange={(event) => setLessonId(event.target.value)}>
             <option value="">Selecione uma lição</option>
             {eligibleLessons.map((lesson) => <option key={lesson.id} value={lesson.id}>{lesson.title}</option>)}
           </select>
@@ -53,9 +53,8 @@ export default function QuizEditor({ item, lessons, quizzes, onSave, onDelete, o
         </div>
         <div className="cms-field">
           <label htmlFor="cms-quiz-status">Visibilidade</label>
-          <select id="cms-quiz-status" value={status} onChange={(event) => setStatus(event.target.value)}>
-            <option value="draft">Rascunho — somente no painel</option>
-            <option value="published">Visível localmente no portal</option>
+          <select id="cms-quiz-status" disabled value={status} onChange={(event) => setStatus(event.target.value)}>
+            <option value="published">Visível no portal</option>
           </select>
         </div>
       </div>
@@ -69,33 +68,33 @@ export default function QuizEditor({ item, lessons, quizzes, onSave, onDelete, o
                 onClick={() => setQuestions((current) => current.filter((item) => item.id !== question.id))}>Remover pergunta</button>
             </div>
             <label htmlFor={`cms-question-${question.id}`}>Enunciado <span aria-hidden="true">*</span></label>
-            <textarea id={`cms-question-${question.id}`} rows={2} required maxLength={600}
+            <textarea id={`cms-question-${question.id}`} rows={2} required readOnly={Boolean(question.apiId)} maxLength={255}
               value={question.question} onChange={(event) => changeQuestion(index, { question: event.target.value })} />
             {question.answers.map((answer, answerIndex) => (
               <div className="cms-answer-row" key={`${question.id}-${answerIndex}`}>
                 <div className="cms-answer-input">
                   <label htmlFor={`cms-answer-${question.id}-${answerIndex}`}>Alternativa {answerIndex + 1}</label>
-                  <input id={`cms-answer-${question.id}-${answerIndex}`} required maxLength={400} value={answer}
+                  <input id={`cms-answer-${question.id}-${answerIndex}`} required readOnly={Boolean(question.apiId)} maxLength={255} value={answer}
                     onChange={(event) => changeAnswer(index, answerIndex, event.target.value)} />
                 </div>
                 <label className="cms-correct-answer">
-                  <input type="radio" name={`cms-correct-${question.id}`} checked={question.correct === answerIndex}
+                  <input type="radio" disabled={Boolean(question.apiId)} name={`cms-correct-${question.id}`} checked={question.correct === answerIndex}
                     onChange={() => changeQuestion(index, { correct: answerIndex })} /> Correta
                 </label>
                 <button className="cms-answer-remove" type="button" aria-label={`Remover alternativa ${answerIndex + 1}`}
-                  disabled={question.answers.length <= 2} onClick={() => changeQuestion(index, {
+                  disabled={Boolean(question.apiId) || question.answers.length <= 3} onClick={() => changeQuestion(index, {
                     answers: question.answers.filter((_, position) => position !== answerIndex),
                     correct: question.correct === answerIndex ? 0 : question.correct > answerIndex ? question.correct - 1 : question.correct,
                   })}>Remover</button>
               </div>
             ))}
-            <button className="cms-inline-button" type="button" disabled={question.answers.length >= 5}
+            <button className="cms-inline-button" type="button" disabled={Boolean(question.apiId) || question.answers.length >= 5}
               onClick={() => changeQuestion(index, { answers: [...question.answers, ''] })}>Adicionar alternativa</button>
             <label htmlFor={`cms-explanation-${question.id}`}>Explicação da resposta correta <span aria-hidden="true">*</span></label>
-            <textarea id={`cms-explanation-${question.id}`} rows={3} required maxLength={1200}
+            <textarea id={`cms-explanation-${question.id}`} rows={3} disabled maxLength={1200}
               value={question.explanation} onChange={(event) => changeQuestion(index, { explanation: event.target.value })} />
             <label htmlFor={`cms-misconception-${question.id}`}>Por que uma alternativa incorreta não funciona</label>
-            <textarea id={`cms-misconception-${question.id}`} rows={2} maxLength={1200}
+            <textarea id={`cms-misconception-${question.id}`} rows={2} disabled maxLength={1200}
               value={question.misconception} onChange={(event) => changeQuestion(index, { misconception: event.target.value })} />
           </fieldset>
         ))}

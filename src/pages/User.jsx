@@ -4,6 +4,7 @@ import LibraryTabs from '../components/library/LibraryTabs.jsx';
 import NotesList from '../components/library/NotesList.jsx';
 import ReadingList from '../components/library/ReadingList.jsx';
 import ReviewList from '../components/library/ReviewList.jsx';
+import ApiUserPanel from '../components/library/ApiUserPanel.jsx';
 import Icon from '../components/Icon.jsx';
 import PageHead from '../components/ui/PageHead.jsx';
 import { getGuideById, guides } from '../data/content.js';
@@ -12,7 +13,7 @@ import { listReadingActivity } from '../lib/readingProgress.js';
 
 export default function User({ saved, history, onToggle, profile, results,
   readingProgress = {}, readingNotes = {}, onOpenPreferences, onClearHistory,
-  onClearReading, onMarkRead, onClearAll, lessons = [], quizzes = [] }) {
+  onClearReading, onMarkRead, onClearAll, lessons = [], quizzes = [], account }) {
   const [tab, setTab] = useState('leituras');
   const [notice, setNotice] = useState('');
   const readingItems = listReadingActivity(guides, readingProgress);
@@ -95,7 +96,8 @@ export default function User({ saved, history, onToggle, profile, results,
           </button>
           <div className="my-readings-aside-rule" />
           <strong>Privacidade por princípio.</strong>
-          <p>Seu histórico, favoritos, notas e seções visitadas ficam neste navegador. Não existe conta, login ou sincronização.</p>
+          <p>Seu histórico, favoritos, notas e seções visitadas ficam neste navegador. Cadastros e inscrições são salvos pela API.</p>
+          {account && <ApiUserPanel account={account} lessons={lessons} />}
           <details className="local-data-details">
             <summary>Gerenciar dados locais <Icon name="arrow" size={15} /></summary>
             <div className="profile-data-actions">

@@ -1,13 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import Link from '../components/ui/Link.jsx';
 import PageHead from '../components/ui/PageHead.jsx';
 import { topics } from '../data/content.js';
+import { useEditorialContent } from '../app/EditorialContext.jsx';
 
 export default function Lessons({ results = {}, lessons = [], tags = [] }) {
-  const [selectedTag, setSelectedTag] = useState('all');
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { searchTags } = useEditorialContent();
+  useEffect(() => {
+    const controller = new AbortController();
+    if (selectedTags.length === 0) {
+      setLoading(false);
+      setError('');
+      return () => controller.abort();
+    }
+    const names = tags.filter((tag) => selectedTags.includes(tag.id)).map((tag) => tag.name);
+    setLoading(true);
+    setError('');
+    searchTags(names, controller.signal).then((items) => {
+      if (!controller.signal.aborted) setFiltered(items);
+    }).catch((failure) => {
+      if (!controller.signal.aborted) {
+        setFiltered([]);
+        setError(failure.message);
+      }
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
+    });
+    return () => controller.abort();
+  }, [selectedTags, tags, searchTags]);
   const published = lessons.filter((lesson) => lesson.status === 'published');
-  const visible = published.filter((lesson) => selectedTag === 'all' || lesson.tagIds.includes(selectedTag));
+  const visible = selectedTags.length === 0 ? published : loading ? [] : filtered;
 
   return (
     <div className="shell">
@@ -18,13 +45,16 @@ export default function Lessons({ results = {}, lessons = [], tags = [] }) {
       />
       {tags.length > 0 && (
         <div className="cms-public-tags" role="group" aria-label="Filtrar lições por tag">
-          <button type="button" aria-pressed={selectedTag === 'all'} onClick={() => setSelectedTag('all')}>Todas as lições</button>
+          <button type="button" aria-pressed={selectedTags.length === 0} onClick={() => setSelectedTags([])}>Todas as lições</button>
           {tags.map((tag) => (
-            <button type="button" key={tag.id} aria-pressed={selectedTag === tag.id}
-              onClick={() => setSelectedTag(tag.id)}>{tag.name}</button>
+            <button type="button" key={tag.id} aria-pressed={selectedTags.includes(tag.id)}
+              onClick={() => setSelectedTags((current) => current.includes(tag.id)
+                ? current.filter((id) => id !== tag.id) : [...current, tag.id])}>{tag.name}</button>
           ))}
         </div>
       )}
+      {loading && <p className="cms-empty" role="status">Buscando lições pelas tags…</p>}
+      {error && <p className="cms-error" role="alert">{error}</p>}
       <div className="lesson-list">
         {visible.map((lesson, index) => (
           <Link to={`/licoes/${lesson.slug}`} key={lesson.id} className="lesson-list-item">
@@ -40,7 +70,7 @@ export default function Lessons({ results = {}, lessons = [], tags = [] }) {
             <Icon name="arrow" />
           </Link>
         ))}
-        {visible.length === 0 && <p className="cms-empty">Nenhuma lição publicada corresponde a este filtro.</p>}
+        {!loading && !error && visible.length === 0 && <p className="cms-empty">Nenhuma lição publicada corresponde a este filtro.</p>}
       </div>
     </div>
   );

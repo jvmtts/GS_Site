@@ -15,6 +15,13 @@ const EMPTY_NOTES = Object.freeze({});
 export default function RouteView({ path, portal, onOpenPreferences }) {
   const editorial = useEditorialContent();
   const route = resolveRoute(path, editorial.catalog);
+  if ((path.startsWith('/licoes') || path === '/admin') && editorial.loading) {
+    return <div className="shell"><p className="cms-empty" role="status">Carregando lições…</p></div>;
+  }
+  if ((path.startsWith('/licoes') || path === '/admin') && editorial.error) {
+    return <div className="shell"><p className="cms-error" role="alert">{editorial.error}</p>
+      <button className="outline-button" onClick={editorial.reload}>Tentar novamente</button></div>;
+  }
   const {
     saved, history, profile, quizResults, readingProgress, readingNotes,
     toggleSavedGuide, recordQuizResult, recordSectionVisit, toggleGuideRead,
@@ -44,7 +51,7 @@ export default function RouteView({ path, portal, onOpenPreferences }) {
     case 'lessons':
       return <Lessons results={quizResults} lessons={editorial.catalog.lessons} tags={editorial.catalog.tags} />;
     case 'lesson':
-      return <Lesson key={route.lesson.id} lesson={route.lesson} quiz={route.quiz} tags={editorial.catalog.tags} />;
+      return <Lesson key={route.lesson.id} lesson={route.lesson} quiz={route.quiz} tags={editorial.catalog.tags} account={editorial.account} />;
     case 'quiz':
       return <Quiz key={route.quiz.id} lesson={route.lesson} quiz={route.quiz} onComplete={recordQuizResult} />;
     case 'user':
@@ -64,6 +71,7 @@ export default function RouteView({ path, portal, onOpenPreferences }) {
           onOpenPreferences={onOpenPreferences}
           lessons={editorial.catalog.lessons}
           quizzes={editorial.catalog.quizzes}
+          account={editorial.account}
         />
       );
     case 'admin':

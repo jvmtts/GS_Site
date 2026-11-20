@@ -8,9 +8,9 @@ export default function LessonEditor({ item, tags, onSave, onDelete, onCancel, h
   const [slug, setSlug] = useState(item?.slug ?? '');
   const [description, setDescription] = useState(item?.description ?? '');
   const [body, setBody] = useState(item?.body ?? '');
-  const [topicId, setTopicId] = useState(item?.topicId ?? topics[0].id);
+  const [topicId, setTopicId] = useState(item?.topicId ?? '');
   const [guideId, setGuideId] = useState(item?.guideId ?? '');
-  const [status, setStatus] = useState(item?.status ?? 'draft');
+  const [status, setStatus] = useState('published');
   const [tagIds, setTagIds] = useState(item?.tagIds ?? []);
   const [slugEdited, setSlugEdited] = useState(Boolean(item));
 
@@ -31,44 +31,46 @@ export default function LessonEditor({ item, tags, onSave, onDelete, onCancel, h
       <div className="cms-form-columns">
         <div className="cms-field">
           <label htmlFor="cms-lesson-title">Título <span aria-hidden="true">*</span></label>
-          <input id="cms-lesson-title" required maxLength={150} value={title} onChange={(event) => {
+          <input id="cms-lesson-title" required readOnly={Boolean(item)} maxLength={150} value={title} onChange={(event) => {
             setTitle(event.target.value);
             if (!slugEdited) setSlug(toSlug(event.target.value));
           }} />
         </div>
         <div className="cms-field">
           <label htmlFor="cms-lesson-slug">Endereço da lição <span aria-hidden="true">*</span></label>
-          <input id="cms-lesson-slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={100}
+          <input id="cms-lesson-slug" disabled pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={100}
             value={slug} onChange={(event) => { setSlug(toSlug(event.target.value)); setSlugEdited(true); }} />
         </div>
       </div>
       <label htmlFor="cms-lesson-description">Descrição curta <span aria-hidden="true">*</span></label>
-      <textarea id="cms-lesson-description" rows={3} required maxLength={500} value={description}
+      <textarea id="cms-lesson-description" rows={3} disabled maxLength={500} value={description}
         onChange={(event) => setDescription(event.target.value)} />
-      <label htmlFor="cms-lesson-body">Texto da lição <span aria-hidden="true">*</span></label>
-      <textarea id="cms-lesson-body" className="cms-body-input" required maxLength={12000} rows={10}
+      <label htmlFor="cms-lesson-body">Texto da lição (HTML) <span aria-hidden="true">*</span></label>
+      <textarea id="cms-lesson-body" className="cms-body-input" required readOnly={Boolean(item)} maxLength={12000} rows={10}
         value={body} onChange={(event) => setBody(event.target.value)}
-        placeholder="Separe parágrafos por uma linha em branco." />
+        placeholder="Ex.: <p>Uma explicação acessível.</p>" />
+      <p className="cms-help">Use parágrafos, subtítulos, listas, negrito e links. Textos simples também são aceitos.</p>
       <div className="cms-form-columns">
         <div className="cms-field">
           <label htmlFor="cms-lesson-topic">Assunto <span aria-hidden="true">*</span></label>
-          <select id="cms-lesson-topic" value={topicId} onChange={(event) => setTopicId(event.target.value)}>
+          <select id="cms-lesson-topic" disabled value={topicId} onChange={(event) => setTopicId(event.target.value)}>
+            <option value="">Sem assunto vinculado</option>
             {topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.title}</option>)}
           </select>
         </div>
         <div className="cms-field">
           <label htmlFor="cms-lesson-guide">Guia relacionado</label>
-          <select id="cms-lesson-guide" value={guideId} onChange={(event) => setGuideId(event.target.value)}>
+          <select id="cms-lesson-guide" disabled value={guideId} onChange={(event) => setGuideId(event.target.value)}>
             <option value="">Sem guia relacionado</option>
             {guides.map((guide) => <option key={guide.id} value={guide.id}>{guide.title}</option>)}
           </select>
         </div>
       </div>
       <label htmlFor="cms-lesson-status">Visibilidade</label>
-      <select id="cms-lesson-status" value={status} onChange={(event) => setStatus(event.target.value)}>
-        <option value="draft">Rascunho — somente no painel</option>
-        <option value="published">Visível localmente no portal</option>
+      <select id="cms-lesson-status" disabled value={status} onChange={(event) => setStatus(event.target.value)}>
+        <option value="published">Visível no portal</option>
       </select>
+      <p className="cms-help">A API atual permite cadastrar título e texto e alterar as tags. Os demais campos são preenchidos pelo acervo do site.</p>
       <fieldset className="cms-tag-fieldset">
         <legend>Tags associadas</legend>
         {tags.length === 0 ? <p>Cadastre uma tag na aba Tags para vinculá-la às lições.</p> : (

@@ -3,6 +3,7 @@ import Brand from '../Brand.jsx';
 import Icon from '../Icon.jsx';
 import Link from '../ui/Link.jsx';
 import { guides } from '../../data/content.js';
+import { useEditorialContent } from '../../app/EditorialContext.jsx';
 
 const primaryNavigation = [
   { to: '/home', label: 'Portal' },
@@ -11,6 +12,7 @@ const primaryNavigation = [
 ];
 
 export default function Header({ path, saved, onOpenPreferences }) {
+  const { catalog } = useEditorialContent();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -43,6 +45,14 @@ export default function Header({ path, saved, onOpenPreferences }) {
     normalizeSearch(`${guide.title} ${guide.description} ${guide.category} ${guide.deck}`)
       .includes(needle),
   ) : guides.filter((guide) => ['constituicao', 'poderes', 'executivo', 'orcamento'].includes(guide.id));
+  if (needle) {
+    for (const lesson of catalog.lessons) {
+      const tags = catalog.tags.filter((tag) => lesson.tagIds.includes(tag.id)).map((tag) => tag.name).join(' ');
+      if (normalizeSearch(`${lesson.title} ${lesson.description} ${tags}`).includes(needle)) {
+        results.push({ ...lesson, path: `/licoes/${lesson.slug}`, category: 'Lição' });
+      }
+    }
+  }
   const isCurrent = (to) => path === to ||
     (to === '/assuntos' && path.startsWith('/guia/')) ||
     (to === '/licoes' && path.startsWith('/licoes/'));
@@ -92,7 +102,7 @@ export default function Header({ path, saved, onOpenPreferences }) {
             autoComplete="off"
           />
           <div className="search-items" aria-live="polite">
-            {results.map((guide) => <Link key={guide.id} to={guide.path} onClick={() => setSearchOpen(false)}>
+            {results.map((guide) => <Link key={guide.path} to={guide.path} onClick={() => setSearchOpen(false)}>
               <span><strong>{guide.title}</strong><small>{guide.category}</small></span><Icon name="arrow" size={15} />
             </Link>)}
             {results.length === 0 && <p>Nenhum guia encontrado. Tente outro assunto ou explore a página de assuntos.</p>}

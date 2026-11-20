@@ -925,10 +925,48 @@ main {
   margin: 12px 0;
 }
 
-.lesson-text>p {
+.lesson-text>p, .lesson-body p, .lesson-body li, .lesson-body blockquote {
   font-size: 16px;
   line-height: 1.74;
   color: var(--text-secondary);
+}
+
+.lesson-body ul, .lesson-body ol {
+  padding-left: 1.4em;
+  margin: 16px 0;
+}
+
+.lesson-body ul {
+  list-style: disc;
+}
+
+.lesson-body ol {
+  list-style: decimal;
+}
+
+.lesson-body h3, .lesson-body h4 {
+  font-family: var(--display);
+  font-weight: 850;
+  margin: 20px 0 10px;
+}
+
+.lesson-body h3 {
+  font-size: 22px;
+}
+
+.lesson-body h4 {
+  font-size: 18px;
+}
+
+.lesson-body blockquote {
+  border-left: 2px solid var(--line);
+  padding-left: 16px;
+  margin: 16px 0;
+}
+
+.lesson-body a {
+  color: var(--blue);
+  text-decoration: underline;
 }
 
 .lesson-bottom {

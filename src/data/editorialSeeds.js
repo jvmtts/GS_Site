@@ -1,4 +1,5 @@
 import { guides, questionsByGuide } from './content.js';
+import { toLessonHtml } from '../lib/lessonText.js';
 
 export function createInitialEditorialCatalog() {
   return {
@@ -9,7 +10,7 @@ export function createInitialEditorialCatalog() {
       slug: guide.slug,
       title: guide.lessonTitle,
       description: guide.lessonDescription,
-      body: guide.lessonText,
+      body: toLessonHtml(guide.lessonText),
       topicId: guide.categoryId,
       guideId: guide.id,
       tagIds: [],

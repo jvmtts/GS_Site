@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import Diagram from '../components/Diagram.jsx';
 import TopicVisual from '../components/editorial/TopicVisual.jsx';
@@ -5,11 +6,16 @@ import Link from '../components/ui/Link.jsx';
 import ButtonLink from '../components/ui/ButtonLink.jsx';
 import PageHead from '../components/ui/PageHead.jsx';
 import { getGuideById, topics } from '../data/content.js';
+import { sanitizeLessonHtml } from '../lib/lessonHtml.js';
 
-export default function Lesson({ lesson, quiz, tags = [] }) {
+export default function Lesson({ lesson, quiz, tags = [], account }) {
+  const [notice, setNotice] = useState('');
+  const [error, setError] = useState('');
+  const subscribed = account?.user?.lessonsIds.includes(lesson.apiId);
   const guide = lesson.guideId ? getGuideById(lesson.guideId) : null;
   const category = topics.find((topic) => topic.id === lesson.topicId)?.title ?? 'Lições';
   const assignedTags = tags.filter((tag) => lesson.tagIds.includes(tag.id));
+  const bodyHtml = useMemo(() => sanitizeLessonHtml(lesson.body), [lesson.body]);
 
   return (
     <div className="shell narrow">
@@ -27,7 +33,7 @@ export default function Lesson({ lesson, quiz, tags = [] }) {
           )}
           <span className="eyebrow">COMECE PELO CONCEITO</span>
           <h2>Informação para compreender. Exercício para lembrar.</h2>
-          {lesson.body.split(/\n\n+/).filter(Boolean).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+          <div className="lesson-body" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
           {guide?.id === 'orcamento' && <Diagram />}
           {guide && (
             <div className="lesson-deep-dive">
@@ -51,7 +57,21 @@ export default function Lesson({ lesson, quiz, tags = [] }) {
           <div className="lesson-bottom">
             {guide && <Link to={guide.path} className="tiny-link"><Icon name="back" size={17} /> Revisar guia e fontes</Link>}
             {quiz && <ButtonLink to={`/licoes/${lesson.slug}/quiz`}>Começar quiz</ButtonLink>}
+            {account?.user ? (
+              <button className="outline-button" type="button" disabled={account.saving || subscribed}
+                onClick={async () => {
+                  setError('');
+                  try {
+                    await account.subscribe(lesson.apiId);
+                    setNotice('Inscrição registrada.');
+                  } catch (failure) {
+                    setError(failure.message);
+                  }
+                }}>{subscribed ? 'Inscrição registrada' : 'Inscrever-se nesta lição'}</button>
+            ) : <Link to="/user" className="tiny-link">Escolher cadastro para se inscrever</Link>}
           </div>
+          {notice && <p className="cms-notice" role="status">{notice}</p>}
+          {error && <p className="cms-error" role="alert">{error}</p>}
         </div>
         <div className="lesson-photo lesson-photo--documental">
           <TopicVisual topicId={lesson.topicId} />
